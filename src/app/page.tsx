@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { db } from "~/server/db";
+import { getDb } from "~/server/db";
+import { posts } from "~/server/db/schema";
 
 const mockURLs = [
   "https://5h6ewqp3d1.ufs.sh/f/7UfRj4xPm20WwTN5zP3tN1rKkRCsf6pOMLnYUAB5I9ybuZjX",
@@ -15,10 +16,11 @@ const mockImages = mockURLs.map((url, index) => ({
     url,
   }))
 
+type Post = typeof posts.$inferSelect;
 
 export default async function HomePage() {
-  
-  const posts = await db.query.posts.findMany();
+  const db = getDb();
+  const posts = await db.query.posts.findMany() as Post[];
   console.log(posts);
 
   return (
