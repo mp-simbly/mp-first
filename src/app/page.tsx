@@ -18,6 +18,15 @@ const mockImages = mockURLs.map((url, index) => ({
 
 type Post = typeof posts.$inferSelect;
 
+const getConnectionString = () => {
+    // In production, use the non-pooled URL
+    if (process.env.VERCEL_ENV === 'production') {
+        return process.env.POSTGRES_URL_NON_POOLING;
+    }
+    // In development, use the pooled URL
+    return process.env.DATABASE_URL;
+};
+
 export default async function HomePage() {
   let posts: Post[] = [];
   

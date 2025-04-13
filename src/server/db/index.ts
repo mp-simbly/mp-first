@@ -2,7 +2,17 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import * as schema from './schema';
 
-const connectionString = process.env.DATABASE_URL;
+// Get the correct database URL based on environment
+const getConnectionString = () => {
+    // In production, use the Supabase URL
+    if (process.env.VERCEL_ENV === 'production') {
+        return process.env.DATABASE_URL;
+    }
+    // In development, use the local URL
+    return process.env.DATABASE_URL;
+};
+
+const connectionString = getConnectionString();
 
 if (!connectionString) {
     throw new Error('DATABASE_URL is not set');
@@ -21,15 +31,23 @@ const mockDb = {
 };
 
 export const getDb = () => {
+    // During build time, return mock db
+    if (process.env.NEXT_PHASE === 'phase-production-build') {
+        return mockDb as any;
+    }
+
     if (db) return db;
     
     try {
-        client = postgres(connectionString);
+        console.log('Connecting to database with URL:', connectionString);
+        client = postgres(connectionString, {
+            ssl: 'require',
+            max: 1,
+        });
         db = drizzle(client, { schema });
         return db;
     } catch (error) {
         console.error('Failed to connect to database:', error);
-        // Return mock db for build time
         return mockDb as any;
     }
 };
