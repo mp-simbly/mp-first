@@ -2,6 +2,8 @@ import Link from "next/link";
 import { getDb } from "~/server/db";
 import { posts } from "~/server/db/schema";
 
+export const dynamic = 'force-dynamic';
+
 const mockURLs = [
   "https://5h6ewqp3d1.ufs.sh/f/7UfRj4xPm20WwTN5zP3tN1rKkRCsf6pOMLnYUAB5I9ybuZjX",
   "https://5h6ewqp3d1.ufs.sh/f/7UfRj4xPm20WsUlwL7CRlFUc05my3a249iWCuj8DAHxGNMbZ",
