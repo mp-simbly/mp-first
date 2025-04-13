@@ -2,15 +2,18 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import * as schema from './schema';
 
+// Get the correct database URL based on environment
 const getConnectionString = () => {
-    // Always use non-pooled URL in production
+    // In production, use the Supabase URL
     if (process.env.VERCEL_ENV === 'production') {
-        return process.env.POSTGRES_URL_NON_POOLING;
+        return process.env.DATABASE_URL_NON_POOLING;
     }
+    // In development, use the local URL
     return process.env.DATABASE_URL;
 };
 
-const connectionString = getConnectionString();
+//const connectionString = getConnectionString();
+const connectionString = process.env.POSTGRES_URL_NON_POOLING;
 
 if (!connectionString) {
     throw new Error('DATABASE_URL is not set');
@@ -31,28 +34,18 @@ const mockDb = {
 export const getDb = () => {
     // During build time, return mock db
     if (process.env.NEXT_PHASE === 'phase-production-build') {
-        console.log('Build phase detected, using mock database');
         return mockDb as any;
     }
 
     if (db) return db;
     
     try {
-        // Add debug logging
-        console.log('Environment:', process.env.VERCEL_ENV);
-        console.log('Connection type:', process.env.VERCEL_ENV === 'production' ? 'non-pooled' : 'pooled');
-        // Only log the host part for security
-        const hostPart = connectionString.split('@')[1]?.split('/')[0];
-        console.log('Connecting to host:', hostPart);
-        
+        console.log('Connecting to database with URL:', connectionString);
         client = postgres(connectionString, {
             ssl: 'require',
             max: 1,
-            connect_timeout: 10,
-            idle_timeout: 20
         });
         db = drizzle(client, { schema });
-        console.log('Database connection established');
         return db;
     } catch (error) {
         console.error('Failed to connect to database:', error);
