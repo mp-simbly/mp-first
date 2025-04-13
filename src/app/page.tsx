@@ -19,9 +19,15 @@ const mockImages = mockURLs.map((url, index) => ({
 type Post = typeof posts.$inferSelect;
 
 export default async function HomePage() {
-  const db = getDb();
-  const posts = await db.query.posts.findMany() as Post[];
-  console.log(posts);
+  let posts: Post[] = [];
+  
+  try {
+    const db = getDb();
+    posts = await db.query.posts.findMany() as Post[];
+  } catch (error) {
+    console.error('Database connection failed:', error);
+    // Use empty array during build time
+  }
 
   return (
     <main className="">
