@@ -18,34 +18,32 @@ const mockImages = mockURLs.map((url, index) => ({
 
 type Post = typeof posts.$inferSelect;
 
-const getConnectionString = () => {
-    // In production, use the non-pooled URL
-    if (process.env.VERCEL_ENV === 'production') {
-        return process.env.POSTGRES_URL_NON_POOLING;
-    }
-    // In development, use the pooled URL
-    return process.env.DATABASE_URL;
-};
 
 export default async function HomePage() {
   let posts: Post[] = [];
   
   try {
+    console.log('Getting database connection...');
     const db = getDb();
+    console.log('Fetching posts...');
     posts = await db.query.posts.findMany() as Post[];
+    console.log('Fetched posts:', posts.length, 'records');
   } catch (error) {
-    console.error('Database connection failed:', error);
-    // Use empty array during build time
+    console.error('Database query failed:', error);
   }
 
   return (
     <main className="">
       <div className="flex flex-wrap gap-4">
-        {posts.map((post) => (
-          <div key={post.id} className="w-48">
-            {post.name}
-          </div>
-        ))}
+        {posts.length === 0 ? (
+          <div>No posts found in database</div>
+        ) : (
+          posts.map((post) => (
+            <div key={post.id} className="w-48">
+              {post.name}
+            </div>
+          ))
+        )}
         {[...mockImages, ...mockImages, ...mockImages].map((image, index) => (
           <div key={image.id + "-" + index} className="w-48">
             <img src={image.url} />
