@@ -1,4 +1,6 @@
 import "~/styles/globals.css";
+import "@uploadthing/react/styles.css";
+
 import {
   ClerkProvider,
   SignInButton,
@@ -10,6 +12,7 @@ import {
 
 import {TopNav} from "./_components/topnav";
 import { Geist } from "next/font/google";
+
 
 export const metadata = {
   title: "T3 Gallery",
