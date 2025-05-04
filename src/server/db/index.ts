@@ -33,9 +33,10 @@ const mockDb = {
 
 export const getDb = () => {
     // During build time, return mock db
-    if (process.env.NEXT_PHASE === 'phase-production-build') {
-        return mockDb as any;
-    }
+    
+    //if (process.env.NEXT_PHASE === 'phase-production-build') {
+    //    return mockDb as any;
+    //}
 
     if (db) return db;
     
