@@ -25,7 +25,7 @@ let db: ReturnType<typeof drizzle> | null = null;
 // Mock database for build time
 const mockDb = {
     query: {
-        posts: {
+        images: {
             findMany: async () => [],
         },
     },
